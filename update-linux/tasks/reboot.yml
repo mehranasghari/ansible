@@ -1,0 +1,8 @@
+- name: reboot
+  reboot:
+    connect_timeout: '{{ reboot_connect_timeout }}'
+    reboot_timeout: '{{ reboot_timeout }}'
+    msg: '{{ reboot_msg }}'
+    post_reboot_delay: '{{ reboot_post_reboot_delay }}'
+    pre_reboot_delay: '{{ reboot_pre_reboot_delay }}'
+    test_command: '{{ reboot_test_command }}'

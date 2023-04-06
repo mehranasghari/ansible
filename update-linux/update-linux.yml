@@ -1,0 +1,14 @@
+---
+- name: update linux and reboot
+  hosts: all
+  become: true
+  gather_facts: true
+
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - include_tasks: 'tasks/update-{{ ansible_os_family }}.yml'
+    - include_tasks: 'tasks/reboot.yml'
+
+

@@ -1,0 +1,8 @@
+apt_cache_valid_time: 3600
+
+reboot_connect_timeout: 10
+reboot_timeout: 100
+reboot_msg: "Hey you! System is going for a reboot!"
+reboot_post_reboot_delay: 10
+reboot_pre_reboot_delay: 10
+reboot_test_command: "ping -c2 8.8.8.8"
