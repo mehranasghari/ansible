@@ -1,0 +1,21 @@
+- name: uninstall older versions of docker
+  apt:
+    name: "{{item}}"
+    state: absent
+  with_items:
+    - docker
+    - docker-engine
+    - docker.io
+    - containerd
+    - runc
+
+- name: update apt repositories and install prerequisities
+  apt:
+    name: "{{item}}"
+    state: present
+    update_cache: true
+  with_items:
+    - ca-certificates
+    - curl
+    - gnupg
+    

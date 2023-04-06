@@ -1,0 +1,7 @@
+---
+- name: install docker
+  hosts: all
+  become: true
+
+  tasks:
+    - include_tasks: 'tasks/{{ ansible_os_family }}-based.yml'
