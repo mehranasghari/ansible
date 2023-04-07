@@ -18,4 +18,46 @@
     - ca-certificates
     - curl
     - gnupg
-    
+
+- name: make directory for gpg key
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: set DNS for Iranian people
+  template:
+    src: "resolv.conf"
+    dest: "/etc/resolv.conf"
+
+- name: download gpg key
+  apt_key:
+    url: https://download.docker.com/linux/debian/gpg
+    state: present
+    keyring: /etc/apt/keyrings/docker.gpg
+
+- name: add docker apt repository
+  apt_repository:
+    repo: "deb [arch={{ ansible_architecture }} signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+    state: present
+    update_cache: yes
+
+- name: install docker packages
+  apt:
+    name: "{{item}}"
+    state: present
+    update_cache: yes
+  with_items:
+    - docker-ce
+    - docker-ce-cli
+    - containerd.io
+    - docker-buildx-plugin
+    - docker-compose-plugin
+
+- name: verify docker installation
+  command: docker run hello-world
+  register: result
+
+- name: docker installation status
+  debug:
+    msg: "{{result.stdout_lines}}"
