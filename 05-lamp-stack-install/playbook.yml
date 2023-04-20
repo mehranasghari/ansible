@@ -1,0 +1,22 @@
+---
+- hosts: all
+  become: true
+  vars_files:
+    - vars/default.yml
+
+  tasks:
+
+    - name: set DNS for Iranian people
+      template:
+        src: "resolv.conf"
+        dest: "/etc/resolv.conf"
+
+
+    - name: Install prerequisities
+      apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: true
+        force_apt_get: true
+      with_items:
+        - vim
