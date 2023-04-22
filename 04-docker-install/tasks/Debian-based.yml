@@ -9,6 +9,11 @@
     - containerd
     - runc
 
+- name: set DNS for Iranian people
+  template:
+    src: "resolv.conf"
+    dest: "/etc/resolv.conf"
+
 - name: update apt repositories and install prerequisities
   apt:
     name: "{{item}}"
@@ -29,11 +34,6 @@
   template:
     src: "shecan"
     dest: "/etc/cron.d/shecan"
-
-- name: set DNS for Iranian people
-  template:
-    src: "resolv.conf"
-    dest: "/etc/resolv.conf"
 
 - name: download gpg key
   apt_key:
