@@ -1,0 +1,7 @@
+---
+mysql_root_password: "mysqlrootpassword"
+app_user: "devops"
+http_host: "test.com"
+http_conf: "test.com.conf"
+http_port: "80"
+disable_default: true

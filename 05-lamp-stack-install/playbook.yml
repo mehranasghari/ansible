@@ -17,6 +17,93 @@
         name: "{{ item }}"
         state: present
         update_cache: true
+        cache_valid_time: 3600
         force_apt_get: true
       with_items:
-        - vim
+        - aptitude
+      
+    - name: Install LAMP packages
+      apt:
+        name: "{{ item }}"
+        state: latest
+        update_cache: true
+        cache_valid_time: 3600
+        update_cache_retries: 3
+        update_cache_retry_max_delay: 30
+      with_items:
+        - apache2
+        - mysql-server
+        - python3-pymysql
+        - php
+        - php-mysql
+        - libapache2-mod-php
+
+  # Apache Configuration 
+    - name: Create document root
+      file:
+        path: "/var/www/{{ http_host }}"
+        state: directory
+        owner: "{{ app_user }}"
+        mode: '0755'
+
+    - name: Set up Apache virtualhost
+      template:
+        src: "files/apache.conf.j2"
+        dest: "/etc/apache2/sites-available/{{ http_conf }}"
+      notify: Reload Apache
+
+    - name: Enable new site
+      shell: /usr/sbin/a2ensite {{ http_conf }}
+      notify: Reload Apache
+
+    - name: Disable Apache default site
+      shell: /usr/sbin/a2dissite 000-default.conf
+      when: disable_default
+      notify: Reload Apache
+
+  # Mysql Configuration
+    # - name: Set the root password
+    #   mysql_user:
+    #     name: root
+    #     password: "{{ mysql_root_password }}"
+    #     login_unix_socket: /var/run/mysqld/mysqld.sock
+
+    - name: Remove all ananymous user accounts
+      mysql_user:
+        name: ''
+        host_all: yes
+        state: absent
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
+
+    - name: Removes the mysql test database
+      mysql_db:
+        name: test
+        state: absent
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
+
+  # UfW Configuration
+    - name: "UFW allow http on port {{ http_port }}"
+      ufw:
+        rule: allow
+        port: "{{ http_port }}" 
+        proto: tcp
+
+  # PHP info page
+    - name: Sets up PHP info page
+      template:
+        src: "files/test.php.j2"
+        dest: "/var/www/{{ http_host }}/test.php"
+
+    
+  handlers:
+    - name: Reload Apache
+      service:
+        name: apache2
+        state: reloaded
+
+    - name: Restart Apache
+      service:
+        name: apache2
+        state: restarted
