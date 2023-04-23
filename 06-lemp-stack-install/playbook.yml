@@ -1,0 +1,25 @@
+---
+
+- hosts: all
+  become: true
+  pre_tasks:
+
+  - name: set DNS
+    template:
+      src: "resolv.conf"
+      dest: "/etc/resolv.conf"
+
+  - name: update the server
+    apt:
+      upgrade: dist
+      update_cache: yes
+      cache_valid_time: 3600
+    when: ansible_distribution == "Ubuntu"
+  
+- hosts: all
+  become: true
+  roles:
+    - nginx
+    - php
+    - mysql
+    - tweaks
